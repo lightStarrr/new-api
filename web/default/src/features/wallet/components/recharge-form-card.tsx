@@ -139,6 +139,9 @@ export function RechargeFormCard({
     Array.isArray(waffoPayMethods) && waffoPayMethods.length > 0
   const minTopup = getMinTopupAmount(topupInfo)
   const redemptionEnabled = topupInfo?.enable_redemption !== false
+  const showTopupUnavailableNotice =
+    !hasAnyTopup && topupInfo?.show_topup_disabled_notice !== false
+  const hasContentBeforeRedemption = hasAnyTopup || showTopupUnavailableNotice
 
   if (loading) {
     return (
@@ -473,7 +476,7 @@ export function RechargeFormCard({
         </div>
       )}
 
-      {!hasAnyTopup && topupInfo?.show_topup_disabled_notice !== false && (
+      {showTopupUnavailableNotice && (
         <Alert>
           <AlertDescription>
             {t(
@@ -501,7 +504,12 @@ export function RechargeFormCard({
 
       {/* Redemption Code Section */}
       {redemptionEnabled ? (
-        <div className='space-y-2.5 border-t pt-4 sm:space-y-3 sm:pt-6'>
+        <div
+          className={cn(
+            'space-y-2.5 sm:space-y-3',
+            hasContentBeforeRedemption && 'border-t pt-4 sm:pt-6'
+          )}
+        >
           <div className='flex items-center gap-2'>
             <IconBadge tone='warning' size='xs'>
               <Gift />
@@ -553,7 +561,7 @@ export function RechargeFormCard({
           )}
         </div>
       ) : (
-        <Alert className='border-t'>
+        <Alert className={cn(hasContentBeforeRedemption && 'border-t')}>
           <AlertDescription>
             {t(
               'Redemption codes are disabled until the administrator confirms compliance terms.'
