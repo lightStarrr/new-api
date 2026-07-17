@@ -49,6 +49,8 @@ const CONTENT_SECTIONS = [
           DataExportDefaultTime: validateDataExportDefaultTime(
             settings.DataExportDefaultTime
           ),
+          SetupGuideEnabled:
+            settings['console_setting.setup_guide_enabled'] ?? true,
         }}
       />
     ),

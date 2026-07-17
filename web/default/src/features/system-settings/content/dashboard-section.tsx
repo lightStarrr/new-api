@@ -56,6 +56,7 @@ const dataDashboardSchema = z.object({
   DataExportEnabled: z.boolean(),
   DataExportInterval: z.number().int().min(1).max(1440),
   DataExportDefaultTime: z.enum(['hour', 'day', 'week']),
+  SetupGuideEnabled: z.boolean(),
 })
 
 type DataDashboardFormValues = z.infer<typeof dataDashboardSchema>
@@ -90,7 +91,13 @@ export function DashboardSection({ defaultValues }: DashboardSectionProps) {
     )
 
     for (const [key, value] of updates) {
-      await updateOption.mutateAsync({ key, value })
+      await updateOption.mutateAsync({
+        key:
+          key === 'SetupGuideEnabled'
+            ? 'console_setting.setup_guide_enabled'
+            : key,
+        value,
+      })
     }
   }
 
@@ -111,6 +118,24 @@ export function DashboardSection({ defaultValues }: DashboardSectionProps) {
               <SettingsSwitchItem>
                 <SettingsSwitchContent>
                   <FormLabel>{t('Enable Data Dashboard')}</FormLabel>
+                </SettingsSwitchContent>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </SettingsSwitchItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='SetupGuideEnabled'
+            render={({ field }) => (
+              <SettingsSwitchItem>
+                <SettingsSwitchContent>
+                  <FormLabel>{t('Show setup guide')}</FormLabel>
                 </SettingsSwitchContent>
                 <FormControl>
                   <Switch
@@ -154,12 +179,10 @@ export function DashboardSection({ defaultValues }: DashboardSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Default time granularity')}</FormLabel>
                   <Select
-                    items={[
-                      ...granularityOptions.map((option) => ({
-                        value: option.value,
-                        label: t(option.label),
-                      })),
-                    ]}
+                    items={granularityOptions.map((option) => ({
+                      value: option.value,
+                      label: t(option.label),
+                    }))}
                     onValueChange={field.onChange}
                     value={field.value}
                     disabled={!isEnabled}

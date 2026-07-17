@@ -464,6 +464,7 @@ export function OverviewDashboard() {
     announcements: showAnnouncementsPanel,
     faq: showFAQPanel,
     uptimeKuma: showUptimePanel,
+    setupGuide: showSetupGuide,
   } = useDashboardContentVisibility()
   const [manualSetupGuideExpanded, setManualSetupGuideExpanded] = useState<
     boolean | null
@@ -476,6 +477,7 @@ export function OverviewDashboard() {
 
   const apiKeysQuery = useQuery({
     queryKey: ['dashboard', 'overview', 'api-keys'],
+    enabled: showSetupGuide,
     queryFn: async () => {
       const result = await getApiKeys({ p: 1, size: 10 })
       return result.success ? (result.data?.items ?? []) : []
@@ -485,6 +487,7 @@ export function OverviewDashboard() {
 
   const modelsQuery = useQuery({
     queryKey: ['dashboard', 'overview', 'user-models'],
+    enabled: showSetupGuide,
     queryFn: async () => {
       const result = await getUserModels()
       return result.success ? (result.data ?? []) : []
@@ -620,7 +623,12 @@ export function OverviewDashboard() {
   return (
     <div className='flex flex-col gap-4'>
       {setupGuideExpanded ? (
-        <CardStaggerContainer className='grid items-stretch gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]'>
+        <CardStaggerContainer
+          className={cn(
+            'grid items-stretch gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]',
+            !showSetupGuide && 'hidden'
+          )}
+        >
           <CardStaggerItem className='bg-card h-full overflow-hidden rounded-2xl border shadow-xs'>
             <div className='relative h-full overflow-hidden p-4 sm:p-5'>
               <SetupGuideBackdrop />
@@ -696,7 +704,7 @@ export function OverviewDashboard() {
           </CardStaggerItem>
         </CardStaggerContainer>
       ) : (
-        <CardStaggerContainer>
+        <CardStaggerContainer className={cn(!showSetupGuide && 'hidden')}>
           <CardStaggerItem className='bg-card overflow-hidden rounded-2xl border shadow-xs'>
             <div className='relative overflow-hidden px-4 py-3 sm:px-5'>
               <SetupGuideBackdrop compact />

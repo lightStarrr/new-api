@@ -214,7 +214,7 @@ export function RechargeFormCard({
       contentClassName='space-y-4 sm:space-y-6'
     >
       {/* Online Topup Section */}
-      {hasAnyTopup ? (
+      {hasAnyTopup && (
         <div className='space-y-4 sm:space-y-6'>
           {hasConfigurableTopup && (
             <>
@@ -471,7 +471,9 @@ export function RechargeFormCard({
             </>
           )}
         </div>
-      ) : (
+      )}
+
+      {!hasAnyTopup && topupInfo?.show_topup_disabled_notice !== false && (
         <Alert>
           <AlertDescription>
             {t(
