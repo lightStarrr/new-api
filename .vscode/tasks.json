@@ -1,0 +1,60 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "准备：开发环境",
+      "type": "shell",
+      "command": "$bun = Get-Command bun -ErrorAction SilentlyContinue; if ($bun) { & $bun.Source install --frozen-lockfile } else { npx --yes bun install --frozen-lockfile }; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; foreach ($relativePath in @('web/default/dist/index.html', 'web/classic/dist/index.html')) { $path = Join-Path '${workspaceFolder}' $relativePath; if (-not (Test-Path $path)) { New-Item -ItemType Directory -Force -Path (Split-Path $path) | Out-Null; [IO.File]::WriteAllText($path, '<!doctype html><title>Development placeholder</title>', [Text.UTF8Encoding]::new($false)) } }",
+      "options": {
+        "cwd": "${workspaceFolder}/web"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "开发：后端",
+      "type": "shell",
+      "command": "go run .",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": ["$go"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "开发：默认前端",
+      "type": "shell",
+      "command": "$bun = Get-Command bun -ErrorAction SilentlyContinue; if ($bun) { & $bun.Source run dev -- --host 0.0.0.0 --port 5173 } else { npx --yes bun run dev -- --host 0.0.0.0 --port 5173 }",
+      "options": {
+        "cwd": "${workspaceFolder}/web/default"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "开发：启动服务",
+      "dependsOrder": "parallel",
+      "dependsOn": ["开发：后端", "开发：默认前端"],
+      "problemMatcher": []
+    },
+    {
+      "label": "开发：全栈（自动构建）",
+      "dependsOrder": "sequence",
+      "dependsOn": ["准备：开发环境", "开发：启动服务"],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
