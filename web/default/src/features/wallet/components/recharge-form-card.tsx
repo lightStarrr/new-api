@@ -20,7 +20,7 @@ import { Gift, ExternalLink, Loader2, Receipt, WalletCards } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { IconBadge } from '@/components/ui/icon-badge'
@@ -530,18 +530,24 @@ export function RechargeFormCard({
             </Button>
           </div>
           {topupLink && (
-            <p className='text-muted-foreground text-xs'>
-              {t('Need a redemption code?')}{' '}
-              <a
-                href={topupLink}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='inline-flex items-center gap-1 underline-offset-4 hover:underline'
+            <Alert className='bg-muted/50 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
+              <AlertTitle>{t('Need a redemption code?')}</AlertTitle>
+              <Button
+                size='sm'
+                nativeButton={false}
+                className='w-full sm:w-auto'
+                render={
+                  <a
+                    href={topupLink}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  />
+                }
               >
                 {t('Get one here')}
-                <ExternalLink className='h-3 w-3' />
-              </a>
-            </p>
+                <ExternalLink data-icon='inline-end' />
+              </Button>
+            </Alert>
           )}
         </div>
       ) : (
