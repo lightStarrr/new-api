@@ -467,6 +467,7 @@ export function OverviewDashboard() {
     announcements: showAnnouncementsPanel,
     faq: showFAQPanel,
     uptimeKuma: showUptimePanel,
+    setupGuide: showSetupGuide,
   } = useDashboardContentVisibility()
   const [manualSetupGuideExpanded, setManualSetupGuideExpanded] = useState<
     boolean | null
@@ -479,6 +480,7 @@ export function OverviewDashboard() {
 
   const apiKeysQuery = useQuery({
     queryKey: ['dashboard', 'overview', 'api-keys'],
+    enabled: showSetupGuide,
     queryFn: async () => {
       const result = await getApiKeys({ p: 1, size: 10 })
       return result.success ? (result.data?.items ?? []) : []
@@ -488,6 +490,7 @@ export function OverviewDashboard() {
 
   const modelsQuery = useQuery({
     queryKey: ['dashboard', 'overview', 'user-models'],
+    enabled: showSetupGuide,
     queryFn: async () => {
       const result = await getUserModels()
       return result.success ? (result.data ?? []) : []
@@ -627,7 +630,7 @@ export function OverviewDashboard() {
     <SectionPageLayout>
       <SectionPageLayout.Title>{t('Overview')}</SectionPageLayout.Title>
       <SectionPageLayout.Actions>
-        {setupStatusReady && setupComplete && (
+        {showSetupGuide && setupStatusReady && setupComplete && (
           <Button
             ref={setupGuideToggleRef}
             variant='ghost'
@@ -643,7 +646,10 @@ export function OverviewDashboard() {
       </SectionPageLayout.Actions>
       <SectionPageLayout.Content>
         <div className='flex flex-col gap-4'>
-          <div id={setupGuideId} hidden={!setupGuideExpanded}>
+          <div
+            id={setupGuideId}
+            hidden={!showSetupGuide || !setupGuideExpanded}
+          >
             {setupGuideExpanded && (
               <CardStaggerContainer className='grid items-stretch gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]'>
                 <CardStaggerItem className='bg-card h-full overflow-hidden rounded-2xl border shadow-xs'>
@@ -727,7 +733,7 @@ export function OverviewDashboard() {
               </CardStaggerContainer>
             )}
           </div>
-          {!setupGuideExpanded && !setupComplete && (
+          {showSetupGuide && !setupGuideExpanded && !setupComplete && (
             <CardStaggerContainer>
               <CardStaggerItem className='bg-card overflow-hidden rounded-2xl border shadow-xs'>
                 <div className='relative overflow-hidden px-4 py-3 sm:px-5'>
